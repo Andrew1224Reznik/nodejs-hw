@@ -35,7 +35,7 @@ app.get('/notes', (req, res) => {
 });
 
 // Маршрут для отримання нотатки за ID
-app.get('/notes/;noteId', (req, res) => {
+app.get('/notes/:noteId', (req, res) => {
   const { noteId } = req.params;
   res.status(200).json({ message: `Retrieved note with ID: ${noteId}` });
 });
