@@ -7,7 +7,7 @@ import pino from 'pino-http';
 import 'dotenv/config';
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT ?? 3000;
 
 app.use(express.json());
 app.use(cors());
@@ -29,32 +29,30 @@ app.use(
   }),
 );
 
-// Логирование времени
-app.use((req, res, next) => {
-  console.log(`Time: ${new Date().toLocaleString()}`);
-  next();
+// Кореневий маршрут
+app.get('/notes', (req, res) => {
+  res.status(200).json({ message: 'Retrieved all notes' });
 });
 
-// Корневой маршрут
-app.get('/', (req, res) => {
-  res.status(200).json({ message: 'Hello, World!' });
+// Маршрут для отримання нотатки за ID
+app.get('/notes/;noteId', (req, res) => {
+  const { noteId } = req.params;
+  res.status(200).json({ message: `Retrieved note with ID: ${noteId}` });
 });
 
-// Маршрут для тестирования middleware ошибки
-app.get('/test-error', (req, res) => {
+// Маршрут для тестування middleware помилки
+app.get('/test-error', () => {
   // Искусственная ошибка для примера
-  throw new Error('Something went wrong');
+  throw new Error('Simulated server error');
 });
 
-// Middleware 404 (после всех маршрутов)
+// Middleware 404 для обробки неіснуючих маршрутів
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
-// Middleware для обработки ошибок
+// Middleware для обробки помилок
 app.use((err, req, res, next) => {
-  console.error(err);
-
   const isProd = process.env.NODE_ENV === 'production';
 
   res.status(500).json({
@@ -64,6 +62,7 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Запуск сервера
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
