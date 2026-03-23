@@ -44,7 +44,7 @@ export async function updateNote(req, res) {
   const note = await Note.findOneAndUpdate(
     { _id: noteId }, // Умови для пошуку
     req.body, // Дані для оновлення
-    { new: true }, // Повернути оновлений документ
+    { returnDocument: 'after' }, // Повернути оновлений документ
   );
   if (!note) {
     // Якщо нотатку не знайдено, кидаємо HTTP-помилку 404
