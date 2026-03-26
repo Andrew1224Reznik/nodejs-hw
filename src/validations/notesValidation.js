@@ -1,6 +1,6 @@
 import { Joi, Segments } from 'celebrate';
 import { isValidObjectId } from 'mongoose';
-import { TAGS } from '../constants/tag.js';
+import { TAGS } from '../constants/tags.js';
 
 //Схема для валідації запиту на отримання всіх нотаток з пагінацією, фільтрацією за тегом та пошуком
 export const getAllNotesSchema = {
