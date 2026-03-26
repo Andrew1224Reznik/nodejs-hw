@@ -6,8 +6,37 @@ import { Note } from '../models/note.js';
 
 // Отримати всі нотатки
 export async function getAllNotes(req, res) {
-  const notes = await Note.find(); // Шукаємо всі документи в колекції Note
-  res.status(200).json(notes); // Відправляємо результат клієнту
+  //Отримуємо параметри пагінації і задаємо дефолтні значення
+  const { page = 1, perPage = 10, tag, search } = req.query;
+  const skip = (page - 1) * perPage; // Обчислюємо кількість документів для пропуску
+
+  // Створюємо базовий запит для колекції
+  const notesQuery = Note.find();
+
+  if (tag) {
+    notesQuery.where('tag').equals(tag); // Додаємо фільтрацію за тегом, якщо він вказаний
+  }
+  if (search) {
+    notesQuery.where({ $text: { $search: search } }); // Додаємо текстовий пошук, якщо параметр search не порожній
+
+    // Виконуємо одразу два запити паралельно
+    const [totalItems, notes] = await Promise.all([
+      notesQuery.clone().countDocuments(), // Підрахунок загальної кількості нотаток
+      notesQuery.skip(skip).limit(perPage),
+    ]); // Отримання нотаток з пагінацією
+
+    //Обчислюємо загальну кількість "сторінок" для пагінації
+    const totalPages = Math.ceil(totalItems / perPage);
+
+    // Відправляємо відповідь з нотатками та інформацією про пагінацію
+    res.status(200).json({
+      page,
+      perPage,
+      totalItems,
+      totalPages,
+      notes,
+    });
+  }
 }
 
 // Отримати конкретну нотатку за id
