@@ -21,19 +21,19 @@ export async function getAllNotes(req, res) {
   }
 
   // Виконуємо одразу два запити паралельно
-  const [totalItems, notes] = await Promise.all([
+  const [totalNotes, notes] = await Promise.all([
     notesQuery.clone().countDocuments(), // Підрахунок загальної кількості нотаток
     notesQuery.skip(skip).limit(perPage),
   ]); // Отримання нотаток з пагінацією
 
   //Обчислюємо загальну кількість "сторінок" для пагінації
-  const totalPages = Math.ceil(totalItems / perPage);
+  const totalPages = Math.ceil(totalNotes / perPage);
 
   // Відправляємо відповідь з нотатками та інформацією про пагінацію
   res.status(200).json({
     page,
     perPage,
-    totalItems,
+    totalNotes,
     totalPages,
     notes,
   });
