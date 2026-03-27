@@ -41,6 +41,7 @@ export const noteIdSchema = {
     noteId: Joi.string().custom(objectIdValidator).required().messages({
       'string.base': 'Note ID must be a string',
       'any.required': 'Note ID is required',
+      'any.custom': 'Invalid id format',
     }),
   }),
 };
@@ -71,6 +72,7 @@ export const updateNoteSchema = {
     noteId: Joi.string().custom(objectIdValidator).required().messages({
       'string.base': 'Note ID must be a string',
       'any.required': 'Note ID is required',
+      'any.custom': 'Invalid id format',
     }),
   }),
   [Segments.BODY]: Joi.object({
