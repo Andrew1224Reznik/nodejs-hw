@@ -18,25 +18,25 @@ export async function getAllNotes(req, res) {
   }
   if (search) {
     notesQuery.where({ $text: { $search: search } }); // Додаємо текстовий пошук, якщо параметр search не порожній
-
-    // Виконуємо одразу два запити паралельно
-    const [totalItems, notes] = await Promise.all([
-      notesQuery.clone().countDocuments(), // Підрахунок загальної кількості нотаток
-      notesQuery.skip(skip).limit(perPage),
-    ]); // Отримання нотаток з пагінацією
-
-    //Обчислюємо загальну кількість "сторінок" для пагінації
-    const totalPages = Math.ceil(totalItems / perPage);
-
-    // Відправляємо відповідь з нотатками та інформацією про пагінацію
-    res.status(200).json({
-      page,
-      perPage,
-      totalItems,
-      totalPages,
-      notes,
-    });
   }
+
+  // Виконуємо одразу два запити паралельно
+  const [totalItems, notes] = await Promise.all([
+    notesQuery.clone().countDocuments(), // Підрахунок загальної кількості нотаток
+    notesQuery.skip(skip).limit(perPage),
+  ]); // Отримання нотаток з пагінацією
+
+  //Обчислюємо загальну кількість "сторінок" для пагінації
+  const totalPages = Math.ceil(totalItems / perPage);
+
+  // Відправляємо відповідь з нотатками та інформацією про пагінацію
+  res.status(200).json({
+    page,
+    perPage,
+    totalItems,
+    totalPages,
+    notes,
+  });
 }
 
 // Отримати конкретну нотатку за id

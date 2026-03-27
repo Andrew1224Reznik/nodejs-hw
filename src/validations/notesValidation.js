@@ -29,13 +29,19 @@ export const getAllNotesSchema = {
 
 //Кастомний валідатор для ObjectId
 const objectIdValidator = (value, helpers) => {
-  return isValidObjectId(value) ? helpers.message('Invalid id format') : value;
+  if (!isValidObjectId(value)) {
+    return helpers.message('Invalid id format');
+  }
+  return value;
 };
 
 //Схема для валідації параметра noteId
 export const noteIdSchema = {
   [Segments.PARAMS]: Joi.object({
-    noteId: Joi.string().custom(objectIdValidator).required(),
+    noteId: Joi.string().custom(objectIdValidator).required().messages({
+      'string.base': 'Note ID must be a string',
+      'any.required': 'Note ID is required',
+    }),
   }),
 };
 
@@ -44,7 +50,7 @@ export const createNoteSchema = {
   [Segments.BODY]: Joi.object({
     title: Joi.string().min(1).required().messages({
       'string.base': 'Title must be a string',
-      'string.min': 'Title should have at lest {#limit} character',
+      'string.min': 'Title should have at least {#limit} character',
       'any.required': 'Title is required',
     }),
     content: Joi.string().trim().allow('').messages({
@@ -62,12 +68,15 @@ export const createNoteSchema = {
 
 export const updateNoteSchema = {
   [Segments.PARAMS]: Joi.object({
-    studentId: Joi.string().custom(objectIdValidator).required(),
+    noteId: Joi.string().custom(objectIdValidator).required().messages({
+      'string.base': 'Note ID must be a string',
+      'any.required': 'Note ID is required',
+    }),
   }),
   [Segments.BODY]: Joi.object({
     title: Joi.string().min(1).messages({
       'string.base': 'Title must be a string',
-      'string.min': 'Title should have at lest {#limit} character',
+      'string.min': 'Title should have at least {#limit} character',
     }),
     content: Joi.string().trim().allow('').messages({
       'string.base': 'Content must be a string',
