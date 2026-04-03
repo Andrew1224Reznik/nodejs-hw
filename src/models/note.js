@@ -21,10 +21,16 @@ const noteSchema = new Schema(
       enum: TAGS,
       default: 'Todo',
     },
+    userId: {
+      // Додаємо поле userId для зберігання посилання на користувача, який створив нотатку
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
   },
   {
-    timestamps: true,
-    versionKey: false,
+    timestamps: true, // Додаємо автоматичне створення полів createdAt та updatedAt для відстеження часу створення та оновлення документів
+    versionKey: false, // Вимикаємо автоматичне додавання поля __v для версійності документів
   },
 );
 

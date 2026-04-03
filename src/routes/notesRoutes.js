@@ -16,7 +16,12 @@ import {
   updateNoteSchema,
 } from '../validations/notesValidation.js';
 
+// Цей middleware буде застосовуватися до всіх маршрутів, які потребують аутентифікації
+import { authenticate } from '../middleware/authenticate.js';
+
 const router = Router();
+
+router.use('/notes', authenticate); // Застосовуємо middleware аутентифікації до всіх маршрутів, що починаються з /notes
 
 router.get('/notes', celebrate(getAllNotesSchema), getAllNotes);
 router.post('/notes', celebrate(createNoteSchema), createNote);

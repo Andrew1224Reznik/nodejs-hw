@@ -11,7 +11,7 @@ export async function getAllNotes(req, res) {
   const skip = (page - 1) * perPage; // Обчислюємо кількість документів для пропуску
 
   // Створюємо базовий запит для колекції
-  const notesQuery = Note.find();
+  const notesQuery = Note.find({ userId: req.user._id }); // Фільтруємо нотатки за userId, щоб отримати лише нотатки поточного користувача
 
   if (tag) {
     notesQuery.where('tag').equals(tag); // Додаємо фільтрацію за тегом, якщо він вказаний
@@ -42,7 +42,7 @@ export async function getAllNotes(req, res) {
 // Отримати конкретну нотатку за id
 export async function getNoteById(req, res) {
   const noteId = req.params.noteId; // Беремо id з параметрів маршруту
-  const note = await Note.findById(noteId); // Шукаємо нотатку за id
+  const note = await Note.findOne({ _id: noteId, userId: req.user._id }); // Нам потрібно знайти конкретний документ за двома умовами: _id студента і userId власника.
   if (!note) {
     // Якщо нотатку не знайдено, кидаємо HTTP-помилку 404
     throw createHttpError(404, 'Note not found');
@@ -52,14 +52,17 @@ export async function getNoteById(req, res) {
 
 // Створити нову нотатку
 export async function createNote(req, res) {
-  const note = await Note.create(req.body); // Створюємо новий документ на основі даних з req.body
+  const note = await Note.create({ ...req.body, userId: req.user._id }); // Створюємо новий документ на основі даних з req.body
   res.status(201).json(note); // Відправляємо створену нотатку з кодом 201 (Created)
 }
 
 // Видалити нотатку за id
 export async function deleteNote(req, res) {
   const noteId = req.params.noteId; // Беремо id з параметрів маршруту
-  const note = await Note.findOneAndDelete({ _id: noteId }); // Видаляємо нотатку з бази
+  const note = await Note.findOneAndDelete({
+    _id: noteId,
+    userId: req.user._id,
+  }); // Видаляємо нотатку з бази
   if (!note) {
     // Якщо нотатку не знайдено, кидаємо HTTP-помилку 404
     throw createHttpError(404, 'Note not found');
@@ -71,7 +74,7 @@ export async function deleteNote(req, res) {
 export async function updateNote(req, res) {
   const noteId = req.params.noteId; // Беремо id з параметрів маршруту
   const note = await Note.findOneAndUpdate(
-    { _id: noteId }, // Умови для пошуку
+    { _id: noteId, userId: req.user._id }, // Умови для пошуку
     req.body, // Дані для оновлення
     { returnDocument: 'after' }, // Повернути оновлений документ
   );
