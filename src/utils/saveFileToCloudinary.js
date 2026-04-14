@@ -20,7 +20,6 @@ export async function saveFileToCloudinary(buffer, userId) {
       },
       (err, result) => (err ? reject(err) : resolve(result)),
     );
-
     Readable.from(buffer).pipe(uploadStream);
   });
 }
