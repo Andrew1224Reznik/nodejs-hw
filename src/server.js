@@ -12,6 +12,7 @@ import cookieParser from 'cookie-parser';
 
 import authRoutes from './routes/authRoutes.js';
 import notesRoutes from './routes/notesRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 
 const app = express(); // ця middleware "вчить" Express розуміти JSON у тілі запиту
 
@@ -24,8 +25,9 @@ app.use(cors()); // 3. Дозвіл для запитів з інших доме
 
 app.use(cookieParser()); // 4. Парсинг cookie з запиту
 
-app.use(authRoutes); // 4. Роутер для авторизації та реєстрації
-app.use(notesRoutes); // 4. Роутер для нотаток
+app.use(authRoutes); // 5. Роутер для авторизації та реєстрації
+app.use(notesRoutes); // 6. Роутер для нотаток
+app.use(userRoutes); // 7. Роутер для користувачів
 
 // 404 — якщо маршрут не знайдено
 app.use(notFoundHandler);
